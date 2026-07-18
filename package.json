@@ -1,0 +1,49 @@
+{
+  "name": "aspiraai",
+  "private": true,
+  "version": "1.0.0",
+  "type": "module",
+  "scripts": {
+    "dev": "vite",
+    "build": "tsc -b && vite build",
+    "preview": "vite preview",
+    "backend": "node backend/server.js"
+  },
+  "dependencies": {
+    "@anthropic-ai/sdk": "^0.112.3",
+    "@google/genai": "^2.12.0",
+    "@google/generative-ai": "^0.24.1",
+    "@hookform/resolvers": "^5.4.0",
+    "@supabase/supabase-js": "^2.45.4",
+    "@tanstack/react-query": "^5.101.2",
+    "better-sqlite3": "^12.11.1",
+    "clsx": "^2.1.1",
+    "cors": "^2.8.6",
+    "express": "^5.2.1",
+    "framer-motion": "^12.42.2",
+    "@react-three/fiber": "^8.15.5",
+    "@react-three/drei": "^9.97.5",
+    "three": "^0.166.1",
+    "lucide-react": "^1.25.0",
+    "mammoth": "^1.12.0",
+    "openai": "^6.48.0",
+    "pdfjs-dist": "^6.1.200",
+    "react": "^18.3.1",
+    "react-dom": "^18.3.1",
+    "react-hook-form": "^7.81.0",
+    "react-router-dom": "^7.18.1",
+    "recharts": "^3.9.2",
+    "tailwind-merge": "^3.6.0",
+    "zod": "^4.4.3"
+  },
+  "devDependencies": {
+    "@types/react": "^18.3.10",
+    "@types/react-dom": "^18.3.0",
+    "@vitejs/plugin-react": "^4.3.2",
+    "autoprefixer": "^10.4.20",
+    "postcss": "^8.4.47",
+    "tailwindcss": "^3.4.13",
+    "typescript": "^5.6.2",
+    "vite": "^5.4.8"
+  }
+}

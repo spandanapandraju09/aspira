@@ -1,0 +1,94 @@
+import { createContext, useContext, useEffect, useState, ReactNode } from 'react'
+import type { Session, User } from '@supabase/supabase-js'
+import { supabase, isDemoMode } from './supabase'
+
+interface AuthContextValue {
+  user: User | null
+  session: Session | null
+  loading: boolean
+  signIn: (email: string, password: string) => Promise<{ error: string | null }>
+  signUp: (email: string, password: string) => Promise<{ error: string | null }>
+  signOut: () => Promise<void>
+  resetPassword: (email: string) => Promise<{ error: string | null }>
+}
+
+const AuthContext = createContext<AuthContextValue | undefined>(undefined)
+
+export function AuthProvider({ children }: { children: ReactNode }) {
+  const [user, setUser] = useState<User | null>(null)
+  const [session, setSession] = useState<Session | null>(null)
+  const [loading, setLoading] = useState(true)
+
+  useEffect(() => {
+    if (isDemoMode) {
+      const demoUser = { id: 'demo-user-123', email: 'demo@example.com' } as User
+      const demoSession = { user: demoUser, access_token: 'demo-token' } as Session
+      setUser(demoUser)
+      setSession(demoSession)
+      setLoading(false)
+      return
+    }
+
+    supabase.auth.getSession().then(({ data }) => {
+      setSession(data.session)
+      setUser(data.session?.user ?? null)
+      setLoading(false)
+    })
+
+    const { data: listener } = supabase.auth.onAuthStateChange((_event, session) => {
+      setSession(session)
+      setUser(session?.user ?? null)
+      setLoading(false)
+    })
+
+    return () => listener.subscription.unsubscribe()
+  }, [])
+
+  const signIn = async (email: string, password: string) => {
+    if (isDemoMode) {
+      setUser({ id: 'demo-user-123', email } as User)
+      return { error: null }
+    }
+    const { error } = await supabase.auth.signInWithPassword({ email, password })
+    return { error: error?.message ?? null }
+  }
+
+  const signUp = async (email: string, password: string) => {
+    if (isDemoMode) {
+      setUser({ id: 'demo-user-123', email } as User)
+      return { error: null }
+    }
+    const { error } = await supabase.auth.signUp({ email, password })
+    return { error: error?.message ?? null }
+  }
+
+  const signOut = async () => {
+    if (isDemoMode) {
+      setUser(null)
+      setSession(null)
+      return
+    }
+    await supabase.auth.signOut()
+  }
+
+  const resetPassword = async (email: string) => {
+    if (isDemoMode) {
+      // Simulate success in demo mode
+      return { error: null }
+    }
+    const { error } = await supabase.auth.resetPasswordForEmail(email)
+    return { error: error?.message ?? null }
+  }
+
+  return (
+    <AuthContext.Provider value={{ user, session, loading, signIn, signUp, signOut, resetPassword }}>
+      {children}
+    </AuthContext.Provider>
+  )
+}
+
+export function useAuth() {
+  const ctx = useContext(AuthContext)
+  if (!ctx) throw new Error('useAuth must be used within AuthProvider')
+  return ctx
+}
